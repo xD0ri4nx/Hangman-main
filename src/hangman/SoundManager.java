@@ -34,8 +34,7 @@ public class SoundManager {
             clip.open(audioIn);
             clip.start();
         } catch (Exception e) {
-            System.err.println("Failed to play sound: " + path);
-            e.printStackTrace();
+            // Silently ignore sound errors - game should continue without audio
         }
     }
 
@@ -78,8 +77,7 @@ public class SoundManager {
             loopingClip.open(audioIn);
             loopingClip.loop(Clip.LOOP_CONTINUOUSLY);
         } catch (Exception e) {
-            System.err.println("Failed to play sound: " + path);
-            e.printStackTrace();
+            // Silently ignore sound errors - game should continue without audio
         }
     }
 }
