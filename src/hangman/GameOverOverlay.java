@@ -108,6 +108,11 @@ public class GameOverOverlay extends JPanel {
 
     public void showOverlay(boolean won) {
         this.isWin = won;
+        if (won) {
+            SoundManager.getInstance().playWin();
+        } else {
+            SoundManager.getInstance().playLose();
+        }
         updateCardContent();
         
         GameFrame frame = GameFrame.getInstance();
@@ -197,6 +202,7 @@ public class GameOverOverlay extends JPanel {
     }
 
     private void restartGame() {
+        SoundManager.getInstance().stopLooping();
         hideOverlay();
         Word.restart();
         Game.restart();

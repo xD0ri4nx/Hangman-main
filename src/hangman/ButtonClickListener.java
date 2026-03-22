@@ -21,6 +21,7 @@ public class ButtonClickListener implements ActionListener {
     private void onButtonClick(String letter) {
 
         System.out.println("Button clicked: " + letter);
+        SoundManager.getInstance().playClick();
 
         Game.getInstance().guess(letter.charAt(0));
         GameFrame.getInstance().update();

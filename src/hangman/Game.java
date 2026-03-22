@@ -59,11 +59,13 @@ public class Game implements Guessable, Playable {
 
         if (guessed) {
             displayedWord = newWord.toString();
+            SoundManager.getInstance().playCorrect();
             if(isWon()) {
                 gameWon();
             }
         } else {
             guesses++;
+            SoundManager.getInstance().playWrong();
             if (isLost()) {
                 displayedWord = secretWord;
                 gameOver();
