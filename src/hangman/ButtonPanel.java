@@ -8,13 +8,15 @@ public class ButtonPanel extends JPanel {
     ButtonPanel() {
 
         setPreferredSize(new Dimension(1200, 100));
-        setBackground(Color.BLACK);
+        setOpaque(false);
         setLayout(new GridLayout(3, 9));
 
         for (char letter : ALPHABET.toCharArray()) {
 
             JButton button = new JButton(String.valueOf(letter));
-            button.setBackground(Color.BLACK);
+            button.setOpaque(false);
+            button.setContentAreaFilled(false);
+            button.setBorder(BorderFactory.createLineBorder(Color.WHITE, 1));
             button.setForeground(Color.WHITE);
 
             button.addActionListener(new ButtonClickListener());
