@@ -12,21 +12,20 @@ public class BackgroundPanel extends JPanel {
     private int lastWidth = -1;
     private int lastHeight = -1;
     private static final String BACKGROUND_PATH = "./src/hangman/images/background.png";
-    
-    private static final Color FROSTED_OVERLAY = new Color(200, 200, 220, 60);
-    private static final Color VIGNETTE_COLOR = new Color(0, 0, 0, 80);
 
     public BackgroundPanel() {
-        setOpaque(false);
+        setOpaque(true);
+        setBackground(Color.BLACK);
         loadAndBlurImage();
     }
 
     private void loadAndBlurImage() {
         try {
             BufferedImage original = javax.imageio.ImageIO.read(new File(BACKGROUND_PATH));
-            blurredImage = fastBlur(original, 3);
+            blurredImage = fastBlur(original, 2);
         } catch (IOException e) {
             System.out.println("ERROR! Could not load background image");
+            blurredImage = null;
         }
     }
 
@@ -54,7 +53,7 @@ public class BackgroundPanel extends JPanel {
             }
         }
 
-        BufferedImage result = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage result = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
         result.setRGB(0, 0, w, h, blurred, 0, w);
         return result;
     }
@@ -66,7 +65,7 @@ public class BackgroundPanel extends JPanel {
         int currentHeight = getHeight();
 
         if (currentWidth <= 0 || currentHeight <= 0) return;
-        if (currentWidth == lastWidth && currentHeight == lastHeight) return;
+        if (currentWidth == lastWidth && currentHeight == lastHeight && scaledImage != null) return;
 
         lastWidth = currentWidth;
         lastHeight = currentHeight;
@@ -80,26 +79,13 @@ public class BackgroundPanel extends JPanel {
         int x = (currentWidth - newWidth) / 2;
         int y = (currentHeight - newHeight) / 2;
 
-        scaledImage = new BufferedImage(currentWidth, currentHeight, BufferedImage.TYPE_INT_ARGB);
+        scaledImage = new BufferedImage(currentWidth, currentHeight, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2d = scaledImage.createGraphics();
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
         Image scaled = blurredImage.getScaledInstance(newWidth, newHeight, Image.SCALE_FAST);
         g2d.drawImage(scaled, x, y, null);
-
-        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.15f));
-        g2d.setColor(FROSTED_OVERLAY);
-        g2d.fillRect(0, 0, currentWidth, currentHeight);
-
-        GradientPaint vignette = new GradientPaint(
-            currentWidth / 2, 0, new Color(0, 0, 0, 0),
-            currentWidth / 2, currentHeight, new Color(0, 0, 0, 100)
-        );
-        g2d.setPaint(vignette);
-        g2d.fillRect(0, 0, currentWidth, currentHeight);
-
         g2d.dispose();
     }
 

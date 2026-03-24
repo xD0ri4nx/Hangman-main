@@ -119,9 +119,9 @@ public class GameFrame extends JFrame {
         layeredPane.add(backgroundPanel, JLayeredPane.DEFAULT_LAYER);
 
         contentPanel = new JPanel();
+        contentPanel.setLayout(null);
         contentPanel.setOpaque(false);
         contentPanel.setBounds(0, 0, BASE_WIDTH, BASE_HEIGHT);
-        contentPanel.setLayout(null);
 
         imagePanel = ImagePanel.getInstance();
         imagePanel.setBounds(0, 0, BASE_WIDTH, (int)(BASE_HEIGHT * 0.65));
@@ -133,12 +133,13 @@ public class GameFrame extends JFrame {
         displayedWord.setFont(new Font("Arial", Font.BOLD, 40));
         displayedWord.setForeground(Color.WHITE);
         displayedWord.setOpaque(true);
-        displayedWord.setBackground(new Color(0, 0, 0, 150));
+        displayedWord.setBackground(new Color(0, 0, 0, 180));
         displayedWord.setBounds(0, (int)(BASE_HEIGHT * 0.65), BASE_WIDTH, 80);
         contentPanel.add(displayedWord);
 
         buttonPanel = new ButtonPanel();
         buttonPanel.setBounds(0, (int)(BASE_HEIGHT * 0.65) + 80, BASE_WIDTH, 120);
+        buttonPanel.setOpaque(false);
         contentPanel.add(buttonPanel);
 
         layeredPane.add(contentPanel, JLayeredPane.PALETTE_LAYER);
