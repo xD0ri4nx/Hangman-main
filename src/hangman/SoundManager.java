@@ -1,23 +1,16 @@
 package hangman;
 
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import java.util.HashMap;
-import java.util.Map;
+import uk.co.caprica.vlcj.player.MediaPlayer;
+import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 
 public class SoundManager {
     private static SoundManager instance;
-    private Map<String, String> soundPaths;
-    private Clip loopingClip;
+    private MediaPlayerFactory factory;
+    private MediaPlayer loopingPlayer;
+    private static final String AUDIO_PATH = "./src/hangman/audio/";
 
     private SoundManager() {
-        soundPaths = new HashMap<>();
-        soundPaths.put("click", "/audio/click.wav");
-        soundPaths.put("correct", "/audio/correct.wav");
-        soundPaths.put("wrong", "/audio/wrong.wav");
-        soundPaths.put("win", "/audio/win.wav");
-        soundPaths.put("lose", "/audio/lose.wav");
+        factory = new MediaPlayerFactory();
     }
 
     public static SoundManager getInstance() {
@@ -27,57 +20,57 @@ public class SoundManager {
         return instance;
     }
 
-    private void playSoundFile(String path) {
-        try {
-            AudioInputStream audioIn = AudioSystem.getAudioInputStream(getClass().getResourceAsStream(path));
-            Clip clip = AudioSystem.getClip();
-            clip.open(audioIn);
-            clip.start();
-        } catch (Exception e) {
-            // Silently ignore sound errors - game should continue without audio
+    private void playOnce(String filename) {
+        new Thread(() -> {
+            try {
+                MediaPlayer player = factory.newHeadlessMediaPlayer();
+                player.playMedia(AUDIO_PATH + filename);
+                
+                while (player.isPlaying()) {
+                    Thread.sleep(50);
+                }
+                player.release();
+            } catch (Exception e) {
+                System.err.println("Error playing sound: " + filename);
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+    private void playLoop(String filename) {
+        if (loopingPlayer != null) {
+            loopingPlayer.stop();
+            loopingPlayer.release();
         }
+        loopingPlayer = factory.newHeadlessMediaPlayer();
+        loopingPlayer.playMedia(AUDIO_PATH + filename, ":file-caching=300", "--loop");
     }
 
     public void playClick() {
-        playSoundFile(soundPaths.get("click"));
+        playOnce("click.wav");
     }
 
     public void playCorrect() {
-        playSoundFile(soundPaths.get("correct"));
+        playOnce("correct.wav");
     }
 
     public void playWrong() {
-        playSoundFile(soundPaths.get("wrong"));
+        playOnce("wrong.wav");
     }
 
     public void playWin() {
-        playSoundLoop(soundPaths.get("win"));
+        playLoop("win.wav");
     }
 
     public void playLose() {
-        playSoundLoop(soundPaths.get("lose"));
+        playLoop("lose.wav");
     }
 
     public void stopLooping() {
-        if (loopingClip != null) {
-            loopingClip.stop();
-            loopingClip.close();
-            loopingClip = null;
-        }
-    }
-
-    private void playSoundLoop(String path) {
-        try {
-            if (loopingClip != null && loopingClip.isRunning()) {
-                loopingClip.stop();
-                loopingClip.close();
-            }
-            AudioInputStream audioIn = AudioSystem.getAudioInputStream(getClass().getResourceAsStream(path));
-            loopingClip = AudioSystem.getClip();
-            loopingClip.open(audioIn);
-            loopingClip.loop(Clip.LOOP_CONTINUOUSLY);
-        } catch (Exception e) {
-            // Silently ignore sound errors - game should continue without audio
+        if (loopingPlayer != null) {
+            loopingPlayer.stop();
+            loopingPlayer.release();
+            loopingPlayer = null;
         }
     }
 }
